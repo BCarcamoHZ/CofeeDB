@@ -1,30 +1,50 @@
 const { response, request } = require('express');
+const bcryptjs = require('bcryptjs');
 
-const usuariosGet = (req = request, res = response) => {
-	const { q, nombre = null, apikey } = req.query;
+const Usuario = require('../models/usuario');
+
+const usuariosGet = async (req = request, res = response) => {
+	const { limit = 5, desde = 0 } = req.query;
+	const query = { estado: true };
+
+	const [ total, usuarios ] = await Promise.all([
+		Usuario.countDocuments(query),
+		Usuario.find(query).skip(desde).limit(limit)
+	]);
+
+	res.json({ total, usuarios });
+};
+
+const usuariosPost = async (req, res = response) => {
+	const { nombre, correo, password, rol } = req.body;
+
+	const usuario = new Usuario({ nombre, correo, rol });
+
+	const salt = bcryptjs.genSaltSync();
+	usuario.password = bcryptjs.hashSync(password, salt);
+
+	await usuario.save();
 
 	res.json({
-		msg: 'get API - controlador',
-		q,
-		nombre,
-		apikey
+		usuario
 	});
 };
 
-const usuariosPost = (req, res = response) => {
-	const body = req.body;
-	res.json({
-		msg: 'post API - controlador',
-		body
-	});
-};
-
-const usuariosPut = (req = request, res = response) => {
+const usuariosPut = async (req = request, res = response) => {
 	const { id } = req.params;
+
+	const { password, google, correo, ...rest } = req.body;
+
+	if (password) {
+		const salt = bcryptjs.genSaltSync();
+		rest.password = bcryptjs.hashSync(password, salt);
+	}
+
+	const usuario = await Usuario.findByIdAndUpdate(id, rest);
 
 	res.json({
 		msg: 'put API - controlador',
-		id
+		usuario
 	});
 };
 
