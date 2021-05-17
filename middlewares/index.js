@@ -1,5 +1,5 @@
 const roleValidator = require('../middlewares/role-validator');
-const fieldsValidator = require('../middlewares/userValidator');
+const fieldsValidator = require('./fieldsValidator');
 const jwtValidator = require('../middlewares/jwtValidator');
 
 module.exports = {

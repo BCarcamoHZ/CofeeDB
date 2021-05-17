@@ -4,7 +4,8 @@ const bcryptjs = require('bcryptjs');
 const Usuario = require('../models/usuario');
 
 const usuariosGet = async (req = request, res = response) => {
-	const { limit = 5, desde = 0 } = req.query;
+	const limit = parseInt(rq.query.limit);
+	const desde = parseInt(rq.query.desde);
 	const query = { estado: true };
 
 	const [ total, usuarios ] = await Promise.all([
@@ -40,7 +41,7 @@ const usuariosPut = async (req = request, res = response) => {
 		rest.password = bcryptjs.hashSync(password, salt);
 	}
 
-	const usuario = await Usuario.findByIdAndUpdate(id, rest);
+	const usuario = await Usuario.findByIdAndUpdate(id, rest, { new: true });
 
 	res.json({
 		msg: 'put API - controlador',

@@ -4,7 +4,7 @@ const { check } = require('express-validator');
 const { roleValidator, hasRoleValidator, fieldsValidator, jwtValidator } = require('../middlewares');
 
 const { usuariosGet, usuariosPost, usuariosPut, usuariosDelete, usuariosPatch } = require('../controllers/usuarios');
-const { isValidRole, emailExists, idExists } = require('../helpers/db-validators');
+const { isValidRole, emailExists, idExists: userIdExists } = require('../helpers/db-validators');
 
 const router = Router();
 
@@ -34,8 +34,8 @@ router.post(
 router.put(
 	'/:id',
 	[
-		check('id', 'this ID is not mongo valid').isMongoId(),
-		check('id').custom(idExists),
+		check('id', 'this ID is does not mongo valid').isMongoId(),
+		check('id').custom(userIdExists),
 		check('rol').custom(isValidRole),
 		fieldsValidator
 	],
@@ -49,7 +49,7 @@ router.delete(
 		//roleValidator,
 		hasRoleValidator('ADMIN_ROLE'),
 		check('id', 'this ID is not mongo valid').isMongoId(),
-		check('id').custom(idExists),
+		check('id').custom(userIdExists),
 		fieldsValidator
 	],
 	usuariosDelete

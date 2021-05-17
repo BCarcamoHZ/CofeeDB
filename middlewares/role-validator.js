@@ -22,7 +22,7 @@ const hasRoleValidator = (...roles) => {
 			});
 		}
 
-		console.log(roles);
+		console.log(roles, rq.authUser.rol);
 
 		if (!roles.includes(rq.authUser.rol)) {
 			return rs.status(401).json({
